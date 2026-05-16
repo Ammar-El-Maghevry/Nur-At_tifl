@@ -1,0 +1,47 @@
+MUAC MEASUREMENT GUIDELINES FOR CHILD MALNUTRITION SCREENING
+World Health Organization & UNICEF Joint Guidelines
+
+WHAT IS MUAC?
+Mid-Upper Arm Circumference (MUAC) is a measurement of the circumference of the left upper arm, measured at the mid-point between the tip of the shoulder and the tip of the elbow. MUAC is the most reliable and easy-to-use indicator for identifying children at risk of acute malnutrition in children aged 6-59 months.
+
+WHY MUAC MATTERS
+MUAC is a strong predictor of mortality risk in children. Children with low MUAC have significantly higher risk of death compared to children with normal MUAC. MUAC screening can be performed by community health workers and even mothers with minimal training.
+
+CLASSIFICATION THRESHOLDS (WHO Standard)
+- MUAC >= 12.5 cm: NORMAL — Child is well-nourished. No immediate action needed. Continue regular monitoring and healthy feeding.
+- MUAC 11.5–12.4 cm: MODERATE ACUTE MALNUTRITION (MAM) — Child is at moderate risk. Refer to supplementary feeding program. Provide ready-to-use supplementary food (RUSF) if available. Follow-up in 2 weeks.
+- MUAC < 11.5 cm: SEVERE ACUTE MALNUTRITION (SAM) — Child is at severe risk and requires IMMEDIATE treatment. Refer urgently to therapeutic feeding center. Check for medical complications. Provide ready-to-use therapeutic food (RUTF) such as Plumpy'Nut.
+
+HOW TO MEASURE MUAC CORRECTLY
+1. Have the child stand or sit upright with left arm relaxed.
+2. Find the midpoint: measure from tip of shoulder (acromion) to tip of elbow (olecranon), mark the midpoint.
+3. Wrap the MUAC tape around the arm at the midpoint, ensuring it is snug but not tight.
+4. Read the measurement to the nearest 0.1 cm.
+5. Record the result and interpret using the color-coded zones on the tape.
+
+MUAC TAPE COLORS
+- Green zone (>= 12.5 cm): Normal nutrition status
+- Yellow zone (11.5–12.4 cm): Moderate malnutrition risk
+- Red zone (< 11.5 cm): Severe malnutrition — medical emergency
+
+FREQUENCY OF SCREENING
+- Children 6-23 months: Screen monthly
+- Children 24-59 months: Screen every 2-3 months
+- During emergencies or high-risk seasons: Screen every 2 weeks
+
+ADVANTAGES OF MUAC OVER OTHER INDICATORS
+- Simple and fast (takes less than 1 minute)
+- No equipment other than a tape measure required
+- Can be performed at community level
+- Strong predictor of mortality compared to weight-for-height z-scores (WHZ)
+- Does not require age verification or weighing scales
+
+IMPORTANT NOTES
+- MUAC measurement is for children aged 6-59 months ONLY
+- For children under 6 months or over 5 years, use weight-for-height z-scores
+- Always use the LEFT arm for standardization
+- Edema (swelling) can mask malnutrition; check for bilateral pitting edema separately
+- A child with bilateral pitting edema is ALWAYS classified as SAM regardless of MUAC
+
+MAURITANIAN CONTEXT
+In Mauritania, acute malnutrition affects approximately 15% of children under 5. The Sahel region experiences seasonal peaks in malnutrition during the "lean season" (June-September) when food stocks are depleted. MUAC screening campaigns are conducted by the Ministry of Health and UNICEF partners across all 13 wilayas.

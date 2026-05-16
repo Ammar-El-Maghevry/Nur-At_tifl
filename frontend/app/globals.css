@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #059669;
+  --primary-light: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.font-arabic {
+  font-family: 'Noto Sans Arabic', Arial, sans-serif;
+}
+
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Gradient backgrounds */
+.gradient-hero {
+  background: linear-gradient(135deg, #064e3b 0%, #059669 40%, #10b981 70%, #34d399 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Risk level colors */
+.risk-normal {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.risk-moderate {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.risk-severe {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+/* Animated gradient border */
+@keyframes borderGlow {
+  0%, 100% { border-color: #059669; box-shadow: 0 0 10px rgba(5, 150, 105, 0.3); }
+  50% { border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+}
+
+.border-glow {
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+/* Loading pulse */
+@keyframes scanning {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0.3; }
+}
+
+.scanning-line {
+  animation: scanning 1.5s ease-in-out infinite;
+}
+
+/* Chat bubbles */
+.chat-bubble-user {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border-radius: 18px 18px 4px 18px;
+}
+
+.chat-bubble-ai {
+  background: white;
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}

@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: nurai-backend
+
+  datasource:
+    url: jdbc:h2:file:./nurai;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+server:
+  port: 8082
+  error:
+    include-message: always
+    include-binding-errors: always
+
+nurai:
+  jwt:
+    secret: NurAI2026HackathonSecretKeyUNICEFMauritaniaChildNutritionDetection
+    expiration: 86400000  # 24 hours
+  ai-service:
+    url: http://localhost:8001
+  uploads:
+    dir: ./uploads
+
+logging:
+  level:
+    com.nurai: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN

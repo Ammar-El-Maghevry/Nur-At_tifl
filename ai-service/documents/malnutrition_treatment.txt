@@ -1,0 +1,84 @@
+MALNUTRITION TREATMENT PROTOCOLS
+WHO/UNICEF Community-Based Management of Acute Malnutrition (CMAM)
+
+TYPES OF ACUTE MALNUTRITION
+
+Severe Acute Malnutrition (SAM):
+- MUAC < 11.5 cm, OR
+- Weight-for-height z-score < -3, OR
+- Bilateral pitting edema (kwashiorkor)
+SAM is a MEDICAL EMERGENCY. Child has 5-20x higher risk of death than well-nourished children.
+
+Moderate Acute Malnutrition (MAM):
+- MUAC 11.5-12.4 cm, OR
+- Weight-for-height z-score -3 to -2
+MAM increases susceptibility to illness and cognitive impairment. Without treatment, may progress to SAM.
+
+TREATMENT PATHWAYS
+
+For SAM WITHOUT complications:
+1. Refer to Community Therapeutic Care (CTC) or Outpatient Therapeutic Program (OTP)
+2. Provide Ready-to-Use Therapeutic Food (RUTF) — Plumpy'Nut
+3. Dose: 200 kcal/kg/day in 4-6 meals
+4. Give amoxicillin for 7 days (routine antibiotic to prevent infection)
+5. Give vitamin A if not received in last 30 days
+6. Weekly follow-up to assess progress
+7. Discharge when MUAC >= 12.5 cm for 2 consecutive visits
+
+For SAM WITH complications (one or more of):
+- Not eating or drinking (anorexia)
+- High fever (>38.5°C)
+- Severe dehydration
+- Extensive infections
+- Severe edema
+→ IMMEDIATE hospitalization at Therapeutic Feeding Center (TFC) or inpatient facility
+→ F-75 therapeutic milk in Phase 1 (stabilization: 3-7 days)
+→ F-100 therapeutic milk in Phase 2 (rehabilitation: 2-4 weeks)
+→ Transition to RUTF before discharge
+
+For MAM:
+1. Enroll in Targeted Supplementary Feeding Program (TSFP)
+2. Provide Ready-to-Use Supplementary Food (RUSF) — Plumpy'Sup
+3. Monthly distribution with monitoring
+4. Promote and support continued breastfeeding
+5. Nutrition education for caregivers
+6. Discharge when MUAC >= 12.5 cm for 2 visits
+
+READY-TO-USE THERAPEUTIC FOOD (RUTF) / PLUMPY'NUT
+RUTF is a peanut-based, oil-rich paste that does not require refrigeration or cooking. It is energy-dense (500 kcal per 92g sachet) and contains all essential nutrients for SAM treatment. Children with SAM should receive approximately 3 sachets/day based on weight.
+
+DANGER SIGNS REQUIRING IMMEDIATE HOSPITAL REFERRAL
+- Loss of consciousness or convulsions
+- Difficulty breathing
+- High fever with severe illness
+- Unable to drink or breastfeed
+- Persistent vomiting
+- Severe dehydration
+- Severe bilateral edema
+
+HOME CARE GUIDANCE FOR MAM
+1. Continue breastfeeding frequently (8-12 times/day for infants)
+2. Increase feeding frequency: give smaller, more frequent meals
+3. Prepare energy-dense foods: add oil, groundnut paste, dried milk powder to porridges
+4. Ensure child eats own portion (supervise feeding, prevent sharing)
+5. Seek medical care if child develops danger signs
+6. Return for follow-up as scheduled
+7. Maintain good hygiene: handwashing before feeding, clean utensils
+
+PREVENTING RELAPSE
+After successful treatment, children are at risk of relapsing:
+- Continue enhanced feeding after recovery
+- Maintain MUAC screening every month for 6 months
+- Address underlying causes: food insecurity, poor hygiene, infections
+- Ensure full immunization schedule
+- Provide vitamin A supplementation every 6 months
+
+MAURITANIAN TREATMENT CENTERS
+Mauritania has a network of Centres de Récupération et d'Education Nutritionnelle (CREN) and Unités Thérapeutiques Nutritionnelles Ambulatoires (UTNA) across the country. Treatment is FREE of charge. Contact the Ministry of Health or UNICEF Mauritania for nearest center information.
+
+WHEN TO WORRY — SUMMARY FOR MOTHERS
+- Child not eating for more than 1 day → See health worker
+- MUAC tape shows red zone → Go to health center IMMEDIATELY
+- Swelling of feet or hands → Emergency — go to hospital
+- Child very weak and cannot stand → Emergency — go to hospital
+- Rapid breathing or difficulty breathing → Emergency — go to hospital
