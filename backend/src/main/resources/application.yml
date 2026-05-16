@@ -3,25 +3,27 @@ spring:
     name: nurai-backend
 
   datasource:
-    url: jdbc:h2:file:./nurai;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./nurai;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
 
   h2:
     console:
       enabled: false
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: ${JPA_DDL_AUTO:update}
     show-sql: false
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
 
   sql:
     init:
-      mode: always
+      mode: ${SQL_INIT_MODE:always}
 
   servlet:
     multipart:
@@ -29,17 +31,17 @@ spring:
       max-request-size: 25MB
 
 server:
-  port: 8082
+  port: ${PORT:8082}
   error:
     include-message: always
     include-binding-errors: always
 
 nurai:
   jwt:
-    secret: NurAI2026HackathonSecretKeyUNICEFMauritaniaChildNutritionDetection
-    expiration: 86400000  # 24 hours
+    secret: ${JWT_SECRET:NurAI2026HackathonSecretKeyUNICEFMauritaniaChildNutritionDetection}
+    expiration: 86400000
   ai-service:
-    url: http://localhost:8001
+    url: ${AI_SERVICE_URL:http://localhost:8001}
   uploads:
     dir: ./uploads
 

@@ -24,8 +24,9 @@ backend/target/
 *.jar
 *.war
 *.ear
-backend/nurai.mv.db
-backend/nurai.trace.db
+backend/*.mv.db
+backend/*.trace.db
+backend/*.db
 backend/uploads/
 
 # Node.js / Next.js
