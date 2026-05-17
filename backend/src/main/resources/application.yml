@@ -3,9 +3,10 @@ spring:
     name: nurai-backend
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./nurai;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE}
-    username: ${SPRING_DATASOURCE_USERNAME:sa}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: jdbc:h2:file:./nurai;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
 
   h2:
     console:
@@ -13,13 +14,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: update
     show-sql: false
     open-in-view: false
 
   sql:
     init:
-      mode: ${SQL_INIT_MODE:always}
+      mode: always
 
   servlet:
     multipart:
