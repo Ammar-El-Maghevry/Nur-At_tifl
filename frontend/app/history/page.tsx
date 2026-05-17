@@ -1,15 +1,16 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Calendar, Baby, ChevronRight, TrendingUp, Camera } from 'lucide-react'
+import { Calendar, TrendingUp, Camera, ChevronRight } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { screeningApi, childApi, getStoredUser, type ScreeningResult } from '@/services/api'
 
-export default function HistoryPage() {
+function HistoryContent() {
   const searchParams = useSearchParams()
   const childIdParam = searchParams.get('childId')
   const [screenings, setScreenings] = useState<ScreeningResult[]>([])
@@ -77,7 +78,6 @@ export default function HistoryPage() {
           </Link>
         </div>
 
-        {/* Child filter */}
         {children.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
             <button
@@ -152,5 +152,13 @@ export default function HistoryPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <HistoryContent />
+    </Suspense>
   )
 }
