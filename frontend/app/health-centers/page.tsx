@@ -9,7 +9,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import { healthApi, type HealthCenter } from '@/services/api'
 
 const WILAYAS = [
-  'All Wilayas', 'Nouakchott', 'Adrar', 'Assaba', 'Brakna',
+  'Toutes les wilayas', 'Nouakchott', 'Adrar', 'Assaba', 'Brakna',
   'Dakhlet Nouadhibou', 'Gorgol', 'Guidimakha', 'Hodh Ech Chargui',
   'Hodh El Gharbi', 'Tagant', 'Tiris Zemmour', 'Trarza'
 ]
@@ -18,7 +18,7 @@ export default function HealthCentersPage() {
   const [centers, setCenters] = useState<HealthCenter[]>([])
   const [filtered, setFiltered] = useState<HealthCenter[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedWilaya, setSelectedWilaya] = useState('All Wilayas')
+  const [selectedWilaya, setSelectedWilaya] = useState('Toutes les wilayas')
   const [search, setSearch] = useState('')
   const [locating, setLocating] = useState(false)
   const [distances, setDistances] = useState<Record<number, number>>({})
@@ -34,7 +34,7 @@ export default function HealthCentersPage() {
 
   useEffect(() => {
     let result = centers
-    if (selectedWilaya !== 'All Wilayas') {
+    if (selectedWilaya !== 'Toutes les wilayas') {
       result = result.filter(c => c.wilaya?.toLowerCase() === selectedWilaya.toLowerCase())
     }
     if (search.trim()) {
@@ -56,7 +56,7 @@ export default function HealthCentersPage() {
           const res = await healthApi.nearest(pos.coords.latitude, pos.coords.longitude)
           const nearest: HealthCenter[] = res.data
           const distMap: Record<number, number> = {}
-          nearest.forEach((c, i) => {
+          nearest.forEach(c => {
             if (c.latitude && c.longitude) {
               const R = 6371
               const dLat = (c.latitude - pos.coords.latitude) * Math.PI / 180
@@ -67,12 +67,12 @@ export default function HealthCentersPage() {
           })
           setDistances(distMap)
           setFiltered(nearest)
-          setSelectedWilaya('All Wilayas')
+          setSelectedWilaya('Toutes les wilayas')
         } catch (e) {}
         setLocating(false)
       },
       () => {
-        alert('Could not get your location. Please enable location access.')
+        alert('Impossible d\'obtenir votre position. Veuillez activer la localisation.')
         setLocating(false)
       }
     )
@@ -83,40 +83,40 @@ export default function HealthCentersPage() {
       <Navbar />
       <div className="max-w-lg mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-800">Health Centers</h1>
-          <p className="text-slate-500 text-sm mt-0.5">المراكز الصحية في موريتانيا</p>
+          <h1 className="text-2xl font-bold text-slate-800">Centres de santé</h1>
+          <p className="text-slate-500 text-sm mt-0.5 font-arabic">المراكز الصحية في موريتانيا</p>
         </div>
 
-        {/* Search + locate */}
         <div className="flex gap-2 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Search centers..."
+              placeholder="Rechercher des centres..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 bg-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 bg-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
             />
           </div>
           <button
             onClick={findNearest}
             disabled={locating}
-            className="flex items-center gap-1.5 px-3 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl text-sm font-semibold disabled:opacity-50 transition-all shadow-sm hover:shadow-md"
           >
             <Navigation className={`w-4 h-4 ${locating ? 'animate-spin' : ''}`} />
-            {locating ? '...' : 'Nearest'}
+            {locating ? '...' : 'Le plus proche'}
           </button>
         </div>
 
-        {/* Wilaya filter */}
         <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-hide">
           {WILAYAS.map(w => (
             <button
               key={w}
               onClick={() => { setSelectedWilaya(w); setSearch('') }}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                selectedWilaya === w ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300'
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                selectedWilaya === w
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700'
               }`}
             >
               {w}
@@ -125,15 +125,18 @@ export default function HealthCentersPage() {
         </div>
 
         {loading ? (
-          <LoadingSpinner />
+          <LoadingSpinner message="Chargement des centres..." />
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
-            <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">No health centers found</p>
+            <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-10 h-10 text-slate-300" />
+            </div>
+            <p className="text-slate-500 font-semibold">Aucun centre trouvé</p>
+            <p className="text-slate-400 text-sm mt-1 font-arabic">لم يتم العثور على مراكز</p>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-xs text-slate-400">{filtered.length} centers found</p>
+            <p className="text-xs text-slate-400 font-medium">{filtered.length} centre{filtered.length > 1 ? 's' : ''} trouvé{filtered.length > 1 ? 's' : ''}</p>
             {filtered.map((center, i) => (
               <motion.div
                 key={center.id}

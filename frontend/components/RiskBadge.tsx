@@ -18,7 +18,7 @@ const riskConfig = {
     text: 'text-emerald-700',
     bgLight: 'bg-emerald-50',
     border: 'border-emerald-200',
-    label: 'Normal',
+    label: 'Normale',
     arabicLabel: 'طبيعي',
     emoji: '✓',
     pulse: 'bg-emerald-400',
@@ -29,7 +29,7 @@ const riskConfig = {
     text: 'text-amber-700',
     bgLight: 'bg-amber-50',
     border: 'border-amber-200',
-    label: 'Moderate Risk',
+    label: 'Risque Modéré',
     arabicLabel: 'خطر متوسط',
     emoji: '!',
     pulse: 'bg-amber-400',
@@ -40,7 +40,7 @@ const riskConfig = {
     text: 'text-red-700',
     bgLight: 'bg-red-50',
     border: 'border-red-200',
-    label: 'Severe — Act Now',
+    label: 'Grave — Agir Maintenant',
     arabicLabel: 'حرج — تصرف الآن',
     emoji: '!',
     pulse: 'bg-red-400',
@@ -57,14 +57,16 @@ export default function RiskBadge({ risk, muac, size = 'md', showLabel = true, a
   const config = riskConfig[risk]
   const s = sizes[size]
 
+  if (!config) return null
+
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="relative">
         {animate && risk !== 'NORMAL' && (
           <motion.div
-            className={`absolute inset-0 rounded-full ${config.pulse} opacity-40`}
-            animate={{ scale: [1, 1.4, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            className={`absolute inset-0 rounded-full ${config.pulse} opacity-30`}
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity }}
           />
         )}
         <motion.div
@@ -86,7 +88,7 @@ export default function RiskBadge({ risk, muac, size = 'md', showLabel = true, a
 
       {showLabel && (
         <motion.div
-          className={`px-3 py-1 rounded-full text-center ${config.bgLight} ${config.border} border`}
+          className={`px-4 py-1.5 rounded-full text-center ${config.bgLight} ${config.border} border shadow-sm`}
           initial={animate ? { opacity: 0, y: 10 } : undefined}
           animate={animate ? { opacity: 1, y: 0 } : undefined}
           transition={{ delay: 0.3 }}

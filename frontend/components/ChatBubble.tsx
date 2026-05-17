@@ -42,15 +42,15 @@ export default function ChatBubble({ message, isUser, timestamp, verified, sourc
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1">
-        <span className="text-white text-xs font-bold">AI</span>
+      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 shadow-sm">
+        <span className="text-white text-xs font-bold">IA</span>
       </div>
       <div className="max-w-[80%]">
         <div className="chat-bubble-ai px-4 py-3">
           {verified && (
-            <div className="flex items-center gap-1 mb-2 pb-2 border-b border-slate-100">
+            <div className="flex items-center gap-1.5 mb-2 pb-2 border-b border-slate-100">
               <Shield className="w-3 h-3 text-emerald-600" />
-              <span className="text-xs text-emerald-600 font-medium">Verified by WHO/UNICEF</span>
+              <span className="text-xs text-emerald-600 font-medium">Vérifié OMS/UNICEF</span>
             </div>
           )}
           <p className={`text-sm text-slate-700 leading-relaxed ${isArabic ? 'font-arabic text-right' : ''}`}>
@@ -59,7 +59,7 @@ export default function ChatBubble({ message, isUser, timestamp, verified, sourc
           {sources && sources.length > 0 && (
             <div className="mt-2 pt-2 border-t border-slate-100">
               <p className="text-xs text-slate-400">
-                Sources: {sources.map(s => s.replace(/_/g, ' ')).join(', ')}
+                Sources : {sources.map(s => s.replace(/_/g, ' ')).join(', ')}
               </p>
             </div>
           )}
@@ -77,11 +77,11 @@ export function TypingIndicator() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
-        <span className="text-white text-xs font-bold">AI</span>
+      <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center mr-2 flex-shrink-0 shadow-sm">
+        <span className="text-white text-xs font-bold">IA</span>
       </div>
       <div className="chat-bubble-ai px-4 py-3">
-        <div className="flex gap-1">
+        <div className="flex gap-1.5 items-center">
           {[0, 1, 2].map(i => (
             <motion.div
               key={i}

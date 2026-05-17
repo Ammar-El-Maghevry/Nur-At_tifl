@@ -103,7 +103,8 @@ async def analyze_muac(file: UploadFile = File(...)):
 
         logger.info(f"Analyzing image: {file.filename}, size: {len(image_bytes)} bytes")
         result = analyze_image(image_bytes)
-        logger.info(f"Analysis result: MUAC={result['muac_value']}cm, Risk={result['risk_level']}, Method={result['detection_method']}")
+        muac_display = f"{result['muac_value']}cm" if result['muac_value'] is not None else "N/A"
+        logger.info(f"Analysis result: MUAC={muac_display}, Risk={result['risk_level']}, Method={result['detection_method']}")
 
         return AnalyzeResponse(**result)
 

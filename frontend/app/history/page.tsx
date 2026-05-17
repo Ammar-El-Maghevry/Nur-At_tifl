@@ -56,13 +56,13 @@ function HistoryContent() {
   }
 
   const getRiskConfig = (risk: string) => ({
-    NORMAL: { dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Normal' },
-    MODERATE: { dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200', label: 'Moderate' },
-    SEVERE: { dot: 'bg-red-500', badge: 'bg-red-50 text-red-700 border-red-200', label: 'Severe' },
+    NORMAL:   { dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Normale' },
+    MODERATE: { dot: 'bg-amber-500',   badge: 'bg-amber-50 text-amber-700 border-amber-200',       label: 'Modéré' },
+    SEVERE:   { dot: 'bg-red-500',     badge: 'bg-red-50 text-red-700 border-red-200',             label: 'Grave' },
   }[risk] || { dot: 'bg-slate-400', badge: 'bg-slate-50 text-slate-700 border-slate-200', label: risk })
 
   const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -70,11 +70,11 @@ function HistoryContent() {
       <div className="max-w-lg mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Screening History</h1>
-            <p className="text-slate-500 text-sm mt-0.5">سجل الفحوصات</p>
+            <h1 className="text-2xl font-bold text-slate-800">Historique des dépistages</h1>
+            <p className="text-slate-500 text-sm mt-0.5 font-arabic">سجل الفحوصات</p>
           </div>
-          <Link href="/screening/new" className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-1.5">
-            <Camera className="w-4 h-4" /> New
+          <Link href="/screening/new" className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow">
+            <Camera className="w-4 h-4" /> Nouveau
           </Link>
         </div>
 
@@ -82,18 +82,18 @@ function HistoryContent() {
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
             <button
               onClick={() => setSelectedChildId(null)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                !selectedChildId ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                !selectedChildId ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300'
               }`}
             >
-              All Children
+              Tous les enfants
             </button>
             {children.map(c => (
               <button
                 key={c.id}
                 onClick={() => setSelectedChildId(c.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  selectedChildId === c.id ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedChildId === c.id ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300'
                 }`}
               >
                 {c.name}
@@ -103,14 +103,17 @@ function HistoryContent() {
         )}
 
         {loading ? (
-          <LoadingSpinner />
+          <LoadingSpinner message="Chargement de l'historique..." />
         ) : screenings.length === 0 ? (
           <div className="text-center py-16">
-            <TrendingUp className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 font-medium">No screenings yet</p>
-            <p className="text-slate-400 text-sm mt-1">Start screening your children</p>
-            <Link href="/screening/new" className="mt-4 inline-block bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-sm font-medium">
-              First Screening
+            <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="w-10 h-10 text-slate-300" />
+            </div>
+            <p className="text-slate-600 font-semibold">Aucun dépistage</p>
+            <p className="text-slate-400 text-sm mt-1">Commencez le dépistage de vos enfants</p>
+            <p className="text-xs text-slate-400 font-arabic mt-1">ابدأ فحص أطفالك</p>
+            <Link href="/screening/new" className="mt-5 inline-block bg-emerald-600 text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-sm">
+              Premier dépistage
             </Link>
           </div>
         ) : (
@@ -125,17 +128,17 @@ function HistoryContent() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link href={`/screening/${s.id}`}>
-                    <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3 card-hover">
+                    <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3 card-hover hover:border-emerald-200 hover:shadow-md transition-all">
                       <div className={`w-3 h-3 rounded-full ${config.dot} flex-shrink-0`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="font-semibold text-slate-800 text-sm">{s.childName}</p>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${config.badge}`}>
+                          <span className={`text-xs px-2.5 py-0.5 rounded-full border font-semibold ${config.badge}`}>
                             {config.label}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-slate-500">
-                          <span className="font-medium text-slate-700">MUAC: {s.muacValue?.toFixed(1)} cm</span>
+                          <span className="font-semibold text-slate-700">PB : {s.muacValue?.toFixed(1)} cm</span>
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {formatDate(s.createdAt)}
@@ -157,7 +160,7 @@ function HistoryContent() {
 
 export default function HistoryPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<LoadingSpinner message="Chargement..." />}>
       <HistoryContent />
     </Suspense>
   )
