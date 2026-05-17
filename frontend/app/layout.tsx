@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import AutoAuth from '@/components/AutoAuth'
 
 export const metadata: Metadata = {
   title: 'NurAI — Smart Nutrition Detection for Children',
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <meta name="theme-color" content="#059669" />
       </head>
-      <body className="min-h-screen bg-slate-50">{children}</body>
+      <body className="min-h-screen bg-slate-50"><AutoAuth>{children}</AutoAuth></body>
     </html>
   )
 }

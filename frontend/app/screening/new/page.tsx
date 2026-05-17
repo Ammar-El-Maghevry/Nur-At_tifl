@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Baby, Plus, AlertTriangle, MapPin, Phone, CheckCircle, ArrowLeft } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -12,7 +11,6 @@ import { childApi, screeningApi, healthApi, getStoredUser, type ScreeningResult,
 import Link from 'next/link'
 
 export default function NewScreeningPage() {
-  const router = useRouter()
   const [step, setStep] = useState<'select-child' | 'capture' | 'analyzing' | 'result'>('select-child')
   const [children, setChildren] = useState<any[]>([])
   const [selectedChild, setSelectedChild] = useState<any>(null)
@@ -24,8 +22,6 @@ export default function NewScreeningPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const u = getStoredUser()
-    if (!u) { router.push('/login'); return }
     loadChildren()
   }, [])
 

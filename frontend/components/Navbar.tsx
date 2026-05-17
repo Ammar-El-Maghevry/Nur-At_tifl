@@ -42,11 +42,8 @@ export default function Navbar() {
             <span className="text-white font-bold text-xl">NurAI</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-white/80 hover:text-white transition-colors text-sm font-medium">
-              Login
-            </Link>
-            <Link href="/register" className="bg-white text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-50 transition-colors">
-              Get Started
+            <Link href="/dashboard" className="bg-white text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-50 transition-colors">
+              Open App
             </Link>
           </div>
         </div>

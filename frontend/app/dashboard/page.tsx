@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Camera, MessageCircle, MapPin, TrendingUp, Baby, ChevronRight, Plus, Heart } from 'lucide-react'
 import Navbar from '@/components/Navbar'
@@ -11,7 +10,6 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import { childApi, screeningApi, getStoredUser, type ScreeningResult } from '@/services/api'
 
 export default function DashboardPage() {
-  const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [children, setChildren] = useState<any[]>([])
   const [recentScreenings, setRecentScreenings] = useState<ScreeningResult[]>([])
@@ -19,9 +17,7 @@ export default function DashboardPage() {
   const [totalScreenings, setTotalScreenings] = useState(0)
 
   useEffect(() => {
-    const u = getStoredUser()
-    if (!u) { router.push('/login'); return }
-    setUser(u)
+    setUser(getStoredUser())
     loadData()
   }, [])
 

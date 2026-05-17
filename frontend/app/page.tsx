@@ -89,17 +89,11 @@ export default function LandingPage() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <Link
-                  href="/register"
+                  href="/dashboard"
                   className="group flex items-center justify-center gap-2 bg-white text-emerald-700 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
                 >
                   Start Screening Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center gap-2 border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-white/10 transition-all"
-                >
-                  Login
                 </Link>
               </motion.div>
             </div>
@@ -317,7 +311,7 @@ export default function LandingPage() {
             انضم إلى الآلاف من الأسر الموريتانية التي تستخدم NurAI لحماية صحة أطفالهم
           </p>
           <Link
-            href="/register"
+            href="/dashboard"
             className="inline-flex items-center gap-2 bg-white text-emerald-700 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
           >
             Start for Free
