@@ -71,13 +71,13 @@ export const healthApi = {
   nearest: (lat: number, lng: number) => api.get('/api/health-centers/nearest', { params: { lat, lng } }),
 }
 
-export type RiskLevel = 'NORMAL' | 'MODERATE' | 'SEVERE'
+export type RiskLevel = 'NORMAL' | 'MODERATE' | 'SEVERE' | 'REJECTED'
 
 export interface ScreeningResult {
   id: number
   childId: number
   childName: string
-  muacValue: number
+  muacValue: number | null
   riskLevel: RiskLevel
   confidence: number
   notes: string

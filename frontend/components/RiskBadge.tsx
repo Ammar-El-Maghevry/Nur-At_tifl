@@ -11,7 +11,10 @@ interface RiskBadgeProps {
   animate?: boolean
 }
 
-const riskConfig = {
+const riskConfig: Record<string, {
+  bg: string; gradient: string; text: string; bgLight: string; border: string;
+  label: string; arabicLabel: string; emoji: string; pulse: string;
+}> = {
   NORMAL: {
     bg: 'bg-emerald-500',
     gradient: 'from-emerald-500 to-emerald-400',

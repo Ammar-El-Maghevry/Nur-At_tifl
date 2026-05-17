@@ -363,7 +363,7 @@ export default function NewScreeningPage() {
                   <p className="text-sm font-medium opacity-90">Résultat pour {result.childName}</p>
                 </div>
                 <div className="p-6 flex flex-col items-center gap-4">
-                  <RiskBadge risk={result.riskLevel as any} muac={result.muacValue} size="lg" />
+                  <RiskBadge risk={result.riskLevel as any} muac={result.muacValue ?? undefined} size="lg" />
                   <div className="text-center">
                     <p className="text-slate-500 text-sm font-medium">Périmètre brachial (PB)</p>
                     <p className="text-5xl font-bold text-slate-800 mt-1">{result.muacValue?.toFixed(1)} <span className="text-2xl text-slate-500 font-normal">cm</span></p>
