@@ -1,5 +1,5 @@
 -- Pre-populate Mauritanian Health Centers
-INSERT INTO nurai_health_centers (name, wilaya, address, phone, latitude, longitude) VALUES
+INSERT IGNORE INTO nurai_health_centers (name, wilaya, address, phone, latitude, longitude) VALUES
 ('Centre de Santé Capitale Nouakchott', 'Nouakchott', 'Tevragh-Zeina, Nouakchott', '+222 45 25 14 30', 18.0858, -15.9785),
 ('Hôpital Cheikh Zayed', 'Nouakchott', 'Ksar, Nouakchott', '+222 45 29 10 40', 18.0939, -15.9653),
 ('Centre de Santé de Toujounine', 'Nouakchott', 'Toujounine, Nouakchott', '+222 45 41 00 15', 18.1123, -15.9012),

@@ -49,6 +49,7 @@ public class ScreeningService {
                 .riskLevel(riskLevel)
                 .confidence(confidence)
                 .notes(advice)
+                .arabicNotes(arabicAdvice)
                 .build();
 
         screening = screeningRepository.save(screening);
@@ -99,6 +100,7 @@ public class ScreeningService {
                 .riskLevel(s.getRiskLevel())
                 .confidence(s.getConfidence())
                 .notes(s.getNotes())
+                .arabicNotes(s.getArabicNotes())
                 .createdAt(s.getCreatedAt())
                 .build();
     }

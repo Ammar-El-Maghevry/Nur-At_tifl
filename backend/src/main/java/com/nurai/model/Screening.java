@@ -34,6 +34,9 @@ public class Screening {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "arabic_notes", columnDefinition = "TEXT")
+    private String arabicNotes;
+
     @Column(name = "created_at")
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -1,0 +1,78 @@
+services:
+
+  # ─── MySQL Database ───────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: nurai_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: nurai
+      MYSQL_USER: nurai
+      MYSQL_PASSWORD: nurai123
+    ports:
+      - "3307:3306"
+    volumes:
+      - nurai_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "nurai", "--password=nurai123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ─── AI Service (Python / FastAPI) ────────────────────────────────
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: nurai_ai
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      SIMULATION_MODE: ${SIMULATION_MODE:-false}
+
+  # ─── Spring Boot Backend ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nurai_backend
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/nurai?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: nurai
+      SPRING_DATASOURCE_PASSWORD: nurai123
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      AI_SERVICE_URL: http://ai-service:8001
+      JWT_SECRET: ${JWT_SECRET:-NurAI2026HackathonSecretKeyUNICEFMauritaniaChildNutritionDetection}
+      PORT: 8082
+    volumes:
+      - nurai_uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+
+  # ─── Next.js Frontend ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8082
+    container_name: nurai_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  nurai_mysql_data:
+  nurai_uploads:

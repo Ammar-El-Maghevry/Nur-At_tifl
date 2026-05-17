@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ScreeningRepository extends JpaRepository<Screening, Long> {
+    @Query("SELECT DISTINCT s FROM Screening s JOIN FETCH s.child WHERE s.child.id = :childId ORDER BY s.createdAt DESC")
     List<Screening> findByChildIdOrderByCreatedAtDesc(Long childId);
 
-    @Query("SELECT s FROM Screening s WHERE s.child.user.id = :userId ORDER BY s.createdAt DESC")
+    @Query("SELECT DISTINCT s FROM Screening s JOIN FETCH s.child c WHERE c.user.id = :userId ORDER BY s.createdAt DESC")
     List<Screening> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     long countByChildUserId(Long userId);
