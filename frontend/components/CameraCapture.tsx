@@ -22,23 +22,41 @@ export default function CameraCapture({ onCapture }: CameraCaptureProps) {
   const startCamera = useCallback(async () => {
     setCameraError(null)
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
+      const constraints: any = {
         video: {
           facingMode: 'environment',
           width: { ideal: 1280 },
           height: { ideal: 720 }
-        }
-      })
+        },
+        audio: false
+      }
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
       setStream(mediaStream)
       setMode('camera')
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream
-          videoRef.current.play()
+
+      // Use async to ensure video element is ready
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch((e) => {
+            console.warn('Autoplay failed:', e)
+          })
         }
-      }, 100)
+      }
     } catch (err: any) {
-      setCameraError('Camera access denied. Please use the upload option instead.')
+      let message = 'Camera access denied. Please use the upload option instead.'
+      if (err.name === 'NotAllowedError') {
+        message = 'Camera permission denied. Use upload instead.'
+      } else if (err.name === 'NotFoundError') {
+        message = 'No camera found on this device. Use upload instead.'
+      } else if (err.name === 'NotSecureError') {
+        message = 'HTTPS required for camera. Use upload instead.'
+      } else if (err.name === 'OverconstrainedError') {
+        message = 'Camera constraints not supported. Use upload instead.'
+      }
+      setCameraError(message)
+      console.error('Camera error:', err)
     }
   }, [])
 
@@ -54,7 +72,12 @@ export default function CameraCapture({ onCapture }: CameraCaptureProps) {
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     const ctx = canvas.getContext('2d')!
+
+    // Mirror the image to match the displayed preview
+    ctx.translate(canvas.width, 0)
+    ctx.scale(-1, 1)
     ctx.drawImage(video, 0, 0)
+
     canvas.toBlob((blob) => {
       if (blob) {
         const file = new File([blob], 'muac_photo.jpg', { type: 'image/jpeg' })
@@ -63,7 +86,7 @@ export default function CameraCapture({ onCapture }: CameraCaptureProps) {
         stopCamera()
         setMode('preview')
       }
-    }, 'image/jpeg', 0.9)
+    }, 'image/jpeg', 0.95)
   }, [stopCamera])
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,24 +143,24 @@ export default function CameraCapture({ onCapture }: CameraCaptureProps) {
               <p className="text-xs text-slate-400 font-arabic">التقط صورة للذراع العلوية</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={startCamera}
-                className="flex flex-col items-center gap-2 p-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors"
-              >
-                <Camera className="w-6 h-6" />
-                <span className="text-sm font-medium">Use Camera</span>
-                <span className="text-xs opacity-80 font-arabic">كاميرا</span>
-              </button>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center gap-2 p-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors"
-              >
-                <Upload className="w-6 h-6" />
-                <span className="text-sm font-medium">Upload Photo</span>
-                <span className="text-xs opacity-70 font-arabic">رفع صورة</span>
-              </button>
-            </div>
+            <button
+              onClick={startCamera}
+              disabled={!!cameraError}
+              className="w-full flex flex-col items-center gap-2 p-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-xl transition-colors font-medium"
+            >
+              <Camera className="w-6 h-6" />
+              <span>Use Camera</span>
+              <span className="text-xs opacity-80 font-arabic">كاميرا</span>
+            </button>
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex flex-col items-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium"
+            >
+              <Upload className="w-6 h-6" />
+              <span>Upload Photo (Always Works)</span>
+              <span className="text-xs opacity-80 font-arabic">رفع صورة</span>
+            </button>
 
             <input
               ref={fileInputRef}
@@ -164,7 +187,9 @@ export default function CameraCapture({ onCapture }: CameraCaptureProps) {
                 autoPlay
                 playsInline
                 muted
+                disablePictureInPicture
                 className="w-full h-full object-cover"
+                style={{ transform: 'scaleX(-1)' }}
               />
               {/* Arm guide overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
