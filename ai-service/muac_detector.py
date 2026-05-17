@@ -1,12 +1,12 @@
 """
-MUAC (Mid-Upper Arm Circumference) detector — adaptive to the WHO MUAC method.
+MUAC (Mid-Upper Arm Circumference) detector — with image validation.
 
 Pipeline:
-  1) Robust skin mask (HSV ∩ YCrCb) — handles the dark skin tones common in Mauritania.
-  2) Optional MUAC-tape detection (red/yellow/green bands) → physical calibration anchor.
-  3) Rotated bounding rect (cv2.minAreaRect) → true arm-width axis, immune to rotation.
-  4) Multi-point width sampling along the arm centerline → median for stability.
-  5) Adaptive confidence from: coverage, aspect, sample variance, tape-found.
+  1) Image validation — reject non-human images (all water, all sky, etc.)
+  2) Skin detection (HSV ∩ YCrCb) — detect human presence
+  3) Arm-like contour detection — find elongated skin regions
+  4) MUAC measurement with confidence scoring
+  5) Reject if confidence too low (likely wrong subject)
 """
 
 import cv2
@@ -18,6 +18,55 @@ import random
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+# ─── Image validation — reject obvious non-human images ──────────────────────
+def validate_image_contains_human(image_bgr: np.ndarray) -> tuple[bool, str]:
+    """
+    Check if image likely contains a human subject.
+    Reject: all sky, all water, all one color, no skin tones detected.
+
+    Returns: (is_valid, reason_if_invalid)
+    """
+    h, w = image_bgr.shape[:2]
+    image_area = h * w
+
+    # Check 1: Image is not mostly uniform color (photo, not screenshot/blank)
+    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+    std_dev = float(np.std(gray))
+    if std_dev < 5:  # Nearly uniform (blank, solid color)
+        return False, "Image appears to be mostly uniform color (blank/screenshot). Please take a real photo of a child's arm."
+
+    # Check 2: Detect skin tones (HSV + YCrCb)
+    hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
+    ycrcb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2YCrCb)
+
+    hsv_skin = cv2.inRange(hsv, (0, 15, 40), (25, 255, 255)) | \
+               cv2.inRange(hsv, (160, 15, 40), (180, 255, 255))
+    ycrcb_skin = cv2.inRange(ycrcb, (0, 133, 77), (255, 173, 127))
+    skin_mask = cv2.bitwise_or(hsv_skin, ycrcb_skin)
+
+    skin_pixels = cv2.countNonZero(skin_mask)
+    skin_coverage = skin_pixels / image_area
+
+    if skin_coverage < 0.02:  # Less than 2% skin tone pixels
+        return False, "No human skin detected. Please photograph a child's upper arm clearly."
+
+    # Check 3: Verify skin forms contours (not just noise)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+    skin_mask_clean = cv2.morphologyEx(skin_mask, cv2.MORPH_CLOSE, kernel)
+    skin_mask_clean = cv2.morphologyEx(skin_mask_clean, cv2.MORPH_OPEN, kernel)
+
+    contours, _ = cv2.findContours(skin_mask_clean, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return False, "Image detected but no clear human features found. Ensure photo shows a child's upper arm."
+
+    # Check 4: Largest contour should be meaningfully sized (not just noise)
+    largest_area = max((cv2.contourArea(c) for c in contours), default=0)
+    if largest_area < 500:  # Tiny contour = likely noise, not a real arm
+        return False, "Image does not show a clear child's arm. Please take a closer, clearer photo."
+
+    return True, ""
 
 
 # ─── WHO MUAC classification (6-59 month children) ────────────────────────────
@@ -90,48 +139,6 @@ def detect_skin_mask(image_bgr: np.ndarray) -> np.ndarray:
     return mask
 
 
-# ─── MUAC tape calibration ────────────────────────────────────────────────────
-def detect_muac_tape(image_bgr: np.ndarray):
-    """
-    Detect MUAC tape by its characteristic red/yellow/green color bands.
-    Real MUAC tape physical width ≈ 1.5 cm; if found, returns px-per-cm.
-    """
-    hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
-
-    red = cv2.inRange(hsv, (0, 150, 80), (10, 255, 255)) | \
-          cv2.inRange(hsv, (170, 150, 80), (180, 255, 255))
-    yellow = cv2.inRange(hsv, (20, 130, 130), (35, 255, 255))
-    green = cv2.inRange(hsv, (45, 100, 80), (80, 255, 255))
-
-    has_red = cv2.countNonZero(red) > 400
-    has_yellow = cv2.countNonZero(yellow) > 400
-    has_green = cv2.countNonZero(green) > 400
-
-    if (has_red + has_yellow + has_green) < 2:
-        return None
-
-    tape_mask = red | yellow | green
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
-    tape_mask = cv2.morphologyEx(tape_mask, cv2.MORPH_CLOSE, kernel)
-
-    contours, _ = cv2.findContours(tape_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    if not contours:
-        return None
-
-    largest = max(contours, key=cv2.contourArea)
-    if cv2.contourArea(largest) < 800:
-        return None
-
-    rect = cv2.minAreaRect(largest)
-    (_, _), (rw, rh), _ = rect
-    if min(rw, rh) < 5 or max(rw, rh) < 30:
-        return None
-
-    tape_width_px = min(rw, rh)
-    px_per_cm = tape_width_px / 1.5  # MUAC tape ≈ 1.5 cm wide
-    return px_per_cm
-
-
 # ─── Multi-point width sampling along arm axis ────────────────────────────────
 def sample_arm_widths(mask: np.ndarray, contour, num_samples: int = 9):
     """
@@ -144,7 +151,6 @@ def sample_arm_widths(mask: np.ndarray, contour, num_samples: int = 9):
     if max(rw, rh) < 20:
         return [min(rw, rh)]
 
-    # Principal axis direction (along the long side of the rect)
     if rw >= rh:
         axis_angle = math.radians(angle)
         length = rw
@@ -159,12 +165,10 @@ def sample_arm_widths(mask: np.ndarray, contour, num_samples: int = 9):
 
     widths = []
     h, w = mask.shape
-    # Sample inner 70% of the arm length to skip noisy endpoints (hand/shoulder)
     for t in np.linspace(-0.35, 0.35, num_samples):
         px = cx + dx * length * t
         py = cy + dy * length * t
 
-        # Walk in both perpendicular directions until leaving the mask
         max_walk = int(max(rw, rh))
         left = right = 0
         for r in range(1, max_walk):
@@ -187,7 +191,6 @@ def sample_arm_widths(mask: np.ndarray, contour, num_samples: int = 9):
     if not widths:
         return [min(rw, rh)]
 
-    # Remove top/bottom 10% outliers
     widths_sorted = sorted(widths)
     if len(widths_sorted) >= 5:
         trim = max(1, len(widths_sorted) // 10)
@@ -196,14 +199,13 @@ def sample_arm_widths(mask: np.ndarray, contour, num_samples: int = 9):
 
 
 # ─── Quality-based adaptive confidence ────────────────────────────────────────
-def compute_confidence(contour, image_shape, widths, has_tape: bool) -> float:
-    """Blend quality signals into a 0.82–0.96 confidence score."""
+def compute_confidence(contour, image_shape, widths) -> float:
+    """Blend quality signals into a 0.70–0.96 confidence score."""
     h, w = image_shape[:2]
     img_area = h * w
     contour_area = cv2.contourArea(contour)
     coverage = contour_area / max(img_area, 1)
 
-    # Coverage: arm should occupy a meaningful fraction of the frame
     if 0.08 <= coverage <= 0.30:
         coverage_score = 1.0
     elif 0.04 <= coverage <= 0.45:
@@ -211,7 +213,6 @@ def compute_confidence(contour, image_shape, widths, has_tape: bool) -> float:
     else:
         coverage_score = 0.70
 
-    # Aspect: arm-like ≈ 2.5-5x as long as wide
     rect = cv2.minAreaRect(contour)
     (_, _), (rw, rh), _ = rect
     aspect = max(rw, rh) / max(min(rw, rh), 1)
@@ -222,11 +223,10 @@ def compute_confidence(contour, image_shape, widths, has_tape: bool) -> float:
     else:
         aspect_score = 0.70
 
-    # Width-sample consistency: lower variance = arm-shaped & well-measured
     if len(widths) >= 3:
         mean_w = float(np.mean(widths))
         std_w = float(np.std(widths))
-        cv_ratio = std_w / max(mean_w, 1)  # coefficient of variation
+        cv_ratio = std_w / max(mean_w, 1)
         if cv_ratio < 0.10:
             consistency_score = 1.0
         elif cv_ratio < 0.20:
@@ -238,30 +238,24 @@ def compute_confidence(contour, image_shape, widths, has_tape: bool) -> float:
     else:
         consistency_score = 0.75
 
-    # Weighted blend (consistency dominates because it reflects the measurement itself)
     base = (
-        0.35 * consistency_score
+        0.50 * consistency_score  # Consistency is most important for measurement
         + 0.25 * coverage_score
         + 0.25 * aspect_score
-        + 0.15  # baseline
     )
 
-    if has_tape:
-        base = min(1.0, base + 0.08)  # physical calibration is a strong signal
-
-    return round(min(0.96, max(0.82, base)), 2)
+    return round(min(0.96, max(0.70, base)), 2)
 
 
 # ─── Main contour-based MUAC estimation ───────────────────────────────────────
 def analyze_with_skin_contour(image_bgr: np.ndarray):
-    """Robust MUAC estimation: rotated rect + multi-sample width + tape calibration."""
+    """Robust MUAC estimation with image validation."""
     try:
         skin_mask = detect_skin_mask(image_bgr)
         contours, _ = cv2.findContours(skin_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             return None
 
-        # Score candidate contours by area × arm-likeness (aspect ratio)
         candidates = []
         for c in contours:
             area = cv2.contourArea(c)
@@ -280,80 +274,41 @@ def analyze_with_skin_contour(image_bgr: np.ndarray):
         candidates.sort(key=lambda x: x[0], reverse=True)
         best_contour = candidates[0][1]
 
-        # Try physical calibration via MUAC tape
-        px_per_cm_tape = detect_muac_tape(image_bgr)
-        has_tape = px_per_cm_tape is not None
-
-        # Sample widths along arm centerline
         widths = sample_arm_widths(skin_mask, best_contour, num_samples=11)
         if not widths:
             return None
         median_width_px = float(np.median(widths))
 
-        # Convert to MUAC circumference
         h, w = image_bgr.shape[:2]
-        if has_tape:
-            px_per_cm = px_per_cm_tape
-        else:
-            # Heuristic fallback: typical child upper-arm appears ~22 cm long in frame
-            rect = cv2.minAreaRect(best_contour)
-            (_, _), (rw, rh), _ = rect
-            arm_length_px = max(rw, rh)
-            px_per_cm = arm_length_px / 22.0
+        rect = cv2.minAreaRect(best_contour)
+        (_, _), (rw, rh), _ = rect
+        arm_length_px = max(rw, rh)
+        px_per_cm = arm_length_px / 22.0
 
         diameter_cm = median_width_px / max(px_per_cm, 1e-3)
         circumference_cm = math.pi * diameter_cm
 
-        # Clamp to realistic MUAC range for 6-59 month children
         muac_cm = max(8.5, min(17.5, circumference_cm))
-        confidence = compute_confidence(best_contour, image_bgr.shape, widths, has_tape)
+        confidence = compute_confidence(best_contour, image_bgr.shape, widths)
+
+        # REJECT if confidence is too low (likely wrong image)
+        if confidence < 0.70:
+            return None
 
         return {
             "muac_value": round(muac_cm, 1),
             "arm_detected": True,
-            "method": "muac_adaptive" + ("_tape" if has_tape else ""),
+            "method": "muac_adaptive",
             "confidence": confidence,
-            "_meta": {
-                "tape_calibrated": has_tape,
-                "n_width_samples": len(widths),
-                "median_width_px": round(median_width_px, 1),
-            }
         }
     except Exception as e:
         logger.warning(f"Adaptive MUAC analysis failed: {e}")
         return None
 
 
-# ─── Simulation (final fallback) ──────────────────────────────────────────────
-def analyze_simulation(image_bgr: np.ndarray) -> dict:
-    """Image-stat-seeded MUAC. Used only when skin detection finds no arm."""
-    h, w = image_bgr.shape[:2]
-    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
-    mean_brightness = float(np.mean(gray))
-    std_brightness = float(np.std(gray))
-
-    seed = int(mean_brightness * 100 + std_brightness * 50 + h + w) % 1000
-    rng = random.Random(seed)
-
-    roll = rng.random()
-    if roll < 0.50:
-        muac = rng.uniform(12.6, 14.5)
-    elif roll < 0.80:
-        muac = rng.uniform(11.5, 12.4)
-    else:
-        muac = rng.uniform(10.0, 11.4)
-
-    return {
-        "muac_value": round(muac, 1),
-        "arm_detected": True,
-        "method": "simulation",
-        "confidence": 0.87
-    }
-
-
-# ─── Public entry point ───────────────────────────────────────────────────────
+# ─── Public entry point with validation ────────────────────────────────────────
 def analyze_image(image_bytes: bytes) -> dict:
-    """Decode image → adaptive MUAC analysis → classification."""
+    """Decode image → validate → analyze MUAC → return result or rejection."""
     try:
         nparr = np.frombuffer(image_bytes, np.uint8)
         image_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -365,23 +320,43 @@ def analyze_image(image_bytes: bytes) -> dict:
         if image_bgr is None:
             raise ValueError("Cannot decode image")
 
-        # Normalize size for consistent processing
+        # Normalize size
         max_dim = 720
         h, w = image_bgr.shape[:2]
         if max(h, w) > max_dim:
             scale = max_dim / max(h, w)
             image_bgr = cv2.resize(image_bgr, (int(w * scale), int(h * scale)))
 
+        # VALIDATE IMAGE CONTAINS HUMAN
+        is_valid, validation_error = validate_image_contains_human(image_bgr)
+        if not is_valid:
+            logger.warning(f"Image validation failed: {validation_error}")
+            return {
+                "muac_value": None,
+                "risk_level": "REJECTED",
+                "confidence": 0.0,
+                "advice": validation_error,
+                "arabic_advice": "الصورة المرفوعة لا تحتوي على صورة واضحة لذراع طفل. يرجى التقاط صورة واضحة لذراع الطفل العلوية.",
+                "arm_detected": False,
+                "detection_method": "validation_failed"
+            }
+
+        # ANALYZE MUAC
         result = analyze_with_skin_contour(image_bgr)
         if result is None:
-            result = analyze_simulation(image_bgr)
+            logger.warning("Could not detect arm in image")
+            return {
+                "muac_value": None,
+                "risk_level": "REJECTED",
+                "confidence": 0.0,
+                "advice": "Could not detect a clear child's arm in the image. Please ensure the upper arm is centered, well-lit, and clearly visible.",
+                "arabic_advice": "لم يتمكن النموذج من اكتشاف ذراع واضحة. تأكد من أن الذراع العلوية مركزة وبإضاءة جيدة.",
+                "arm_detected": False,
+                "detection_method": "no_arm_detected"
+            }
 
         muac_cm = result["muac_value"]
         classification = classify_muac(muac_cm)
-
-        meta = result.get("_meta", {})
-        if meta:
-            logger.info(f"MUAC meta: {meta}")
 
         return {
             "muac_value": muac_cm,
@@ -395,14 +370,12 @@ def analyze_image(image_bytes: bytes) -> dict:
 
     except Exception as e:
         logger.error(f"Image analysis error: {e}")
-        fallback_muac = 12.8
-        classification = classify_muac(fallback_muac)
         return {
-            "muac_value": fallback_muac,
-            "risk_level": classification["risk_level"],
-            "confidence": 0.82,
-            "advice": classification["advice"],
-            "arabic_advice": classification["arabic_advice"],
+            "muac_value": None,
+            "risk_level": "REJECTED",
+            "confidence": 0.0,
+            "advice": "Image analysis failed. Please try with a clear photo of a child's upper arm.",
+            "arabic_advice": "فشل تحليل الصورة. يرجى المحاولة بصورة واضحة لذراع طفل.",
             "arm_detected": False,
-            "detection_method": "fallback"
+            "detection_method": "error"
         }

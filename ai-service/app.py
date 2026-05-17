@@ -64,7 +64,7 @@ class ChatResponse(BaseModel):
 
 
 class AnalyzeResponse(BaseModel):
-    muac_value: float
+    muac_value: float | None
     risk_level: str
     confidence: float
     advice: str
