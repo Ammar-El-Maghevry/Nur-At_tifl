@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "children")
+@Table(name = "nurai_children")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
